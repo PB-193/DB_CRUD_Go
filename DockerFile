@@ -1,0 +1,7 @@
+# FROM もととなるイメージを指定
+FROM golang:latest
+
+# RUN イメージのbuild時に実行するコマンド
+RUN mkdir /app
+# WORKDIR 作業ディレクトリを指定。以降のコマンドはこのディレクトリを基準に実行される。
+WORKDIR /app
