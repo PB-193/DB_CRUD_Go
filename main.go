@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	"strconv"
 	"time"
 
@@ -17,13 +18,19 @@ type User struct {
 }
 
 func main() {
+	// データベースへの接続を開始
 	db := sqlConnect()
+	// Userモデルのマイグレーションを行う。これにより、データベースに User テーブルが存在しない場合、新たに作成されます。
 	db.AutoMigrate(&User{})
+	// 関数の終了時にデータベースの接続を閉じるよう指示
 	defer db.Close()
 
+	// ginフレームワークのデフォルトのルータを初期化
 	router := gin.Default()
+	// templates ディレクトリのHTMLテンプレートを全て読み込む
 	router.LoadHTMLGlob("templates/*.html")
 
+	// ユーザーの一覧を表示するルートです。データベースからユーザーの情報を取得して、index.html というテンプレートに渡しています。
 	router.GET("/", func(ctx *gin.Context) {
 		db := sqlConnect()
 		var users []User
@@ -43,9 +50,11 @@ func main() {
 		db.Create(&User{Name: name, Email: email})
 		defer db.Close()
 
+		// 保存後、ルートページにリダイレクト
 		ctx.Redirect(302, "/")
 	})
 
+	// IDを取得して、そのIDのユーザーをデータベースから削除
 	router.POST("/delete/:id", func(ctx *gin.Context) {
 		db := sqlConnect()
 		n := ctx.Param("id")
@@ -61,6 +70,27 @@ func main() {
 		ctx.Redirect(302, "/")
 	})
 
+	router.GET("/user/:id", func(ctx *gin.Context) {
+		db := sqlConnect()
+		n := ctx.Param("id")
+		id, err := strconv.Atoi(n)
+		if err != nil {
+			ctx.String(http.StatusBadRequest, "IDが不正です")
+			return
+		}
+		var user User
+		db.First(&user, id)
+		if user.ID == 0 {
+			ctx.String(http.StatusNotFound, "ユーザが見つかりません")
+			return
+		}
+		defer db.Close()
+		ctx.HTML(http.StatusOK, "user_show.html", gin.H{
+			"user": user,
+		})
+	})
+
+	// Webサーバーを起動
 	router.Run()
 }
 
@@ -84,13 +114,16 @@ func sqlConnect() (database *gorm.DB) {
 			fmt.Print(".")
 			time.Sleep(time.Second)
 			count++
-			if count > 180 {
+			if count > 5 {
 				fmt.Println("")
+				fmt.Println("DB接続失敗")
 				panic(err)
 			}
+			// DBに接続する
 			db, err = gorm.Open(DBMS, CONNECT)
 		}
 	}
+	fmt.Println("DB接続成功")
 
 	return db
 }

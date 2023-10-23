@@ -3,19 +3,18 @@ FROM golang:latest
 
 # RUN イメージのbuild時に実行するコマンド
 RUN mkdir /app
+
+# Set the Current Working Directory inside the container
+COPY . /app
+
 # WORKDIR 作業ディレクトリを指定。以降のコマンドはこのディレクトリを基準に実行される。
 WORKDIR /app
 
-# Install air
-RUN go mod tidy && \
-RUN go install github.com/cosmtrek/air@latest
+# Download all dependencies. Dependencies will be cached if the go.mod and the go.sum files are not changed 
+RUN go mod download
 
-# パッケージを取得
-RUN go get github.com/gin-gonic/gin
-RUN go install github.com/gin-gonic/gin
-RUN go get github.com/gin-gonic/gin
-RUN go get github.com/go-sql-driver/mysql
-RUN go get github.com/jinzhu/gorm
+# Install air
+RUN go install github.com/cosmtrek/air@latest
 
 # air -c [tomlファイル名] // 設定ファイルを指定してair実行(WORKDIRに.air.tomlを配置しておくこと)
 CMD ["air", "-c", ".air.toml"]
