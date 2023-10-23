@@ -5,3 +5,17 @@ FROM golang:latest
 RUN mkdir /app
 # WORKDIR 作業ディレクトリを指定。以降のコマンドはこのディレクトリを基準に実行される。
 WORKDIR /app
+
+# Install air
+RUN go mod tidy && \
+RUN go install github.com/cosmtrek/air@latest
+
+# パッケージを取得
+RUN go get github.com/gin-gonic/gin
+RUN go install github.com/gin-gonic/gin
+RUN go get github.com/gin-gonic/gin
+RUN go get github.com/go-sql-driver/mysql
+RUN go get github.com/jinzhu/gorm
+
+# air -c [tomlファイル名] // 設定ファイルを指定してair実行(WORKDIRに.air.tomlを配置しておくこと)
+CMD ["air", "-c", ".air.toml"]
