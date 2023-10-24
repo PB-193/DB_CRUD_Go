@@ -7,7 +7,9 @@ services:
       context: .
       dockerfile: DockerFile
     stdin_open: true
+    # 標準入出力先のデバイス
     tty: true
+    # マウント
     volumes:
       - .:/app
     ports:

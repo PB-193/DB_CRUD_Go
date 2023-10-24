@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"net/http"
+
+	// strconv パッケージは、基本データ型の文字列表現との変換を実装
 	"strconv"
 	"time"
 
@@ -41,7 +43,7 @@ func main() {
 			"users": users,
 		})
 	})
-
+	// 'ctx'はGinのオブジェクト。HTTPリクエストとレスポンスの橋渡し役
 	router.POST("/new", func(ctx *gin.Context) {
 		db := sqlConnect()
 		name := ctx.PostForm("name")
@@ -72,7 +74,9 @@ func main() {
 
 	router.GET("/user/:id", func(ctx *gin.Context) {
 		db := sqlConnect()
+		// URLの :id パートに該当する部分を取得
 		n := ctx.Param("id")
+		//  取得したID(変数n)を変換して'id'と'err'変数に代入しています。 ’Atoi’ は文字列を整数に変換する関数です。
 		id, err := strconv.Atoi(n)
 		if err != nil {
 			ctx.String(http.StatusBadRequest, "IDが不正です")
@@ -123,7 +127,7 @@ func sqlConnect() (database *gorm.DB) {
 			db, err = gorm.Open(DBMS, CONNECT)
 		}
 	}
-	fmt.Println("DB接続成功")
+	// fmt.Println("DB接続成功")
 
 	return db
 }
