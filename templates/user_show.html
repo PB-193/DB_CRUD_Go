@@ -1,13 +1,25 @@
 <!DOCTYPE html>
 <html lang="ja">
-    <head>
-        <meta charset="UTF-8">
-        <title>User Detail</title>
-    </head>
-    <body>
-        <h1>ユーザーの詳細</h1>
-        <p>名前: {{ .user.Name }}</p>
-        <p>メール: {{ .user.Email }}</p>
-        <a href="/">戻る</a>
-    </body>
+<head>
+    <meta charset="UTF-8">
+    <title>User Detail</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <h1 class="mb-4">ユーザーの詳細</h1>
+        <div class="card">
+            <div class="card-body">
+                <p><strong>名前:</strong> {{ .user.Name }}</p>
+                <p><strong>メール:</strong> {{ .user.Email }}</p>
+            </div>
+        </div>
+        <a href="/" class="btn btn-secondary mt-3">戻る</a>
+    </div>
+    <!-- Bootstrap JS and jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
 </html>
+

@@ -62,21 +62,43 @@ func main() {
 		n := ctx.Param("id")
 		id, err := strconv.Atoi(n)
 		if err != nil {
-			panic("id is not a number")
+			panic("IDがありません")
 		}
 		var user User
-		db.First(&user, id)
+		db.Find(&user, id)
 		db.Delete(&user)
 		defer db.Close()
 
 		ctx.Redirect(302, "/")
 	})
 
+	// IDを取得して、そのIDのユーザー詳細を表示
 	router.GET("/user/:id", func(ctx *gin.Context) {
 		db := sqlConnect()
 		// URLの :id パートに該当する部分を取得
 		n := ctx.Param("id")
 		//  取得したID(変数n)を変換して'id'と'err'変数に代入しています。 ’Atoi’ は文字列を整数に変換する関数です。
+		id, err := strconv.Atoi(n)
+		if err != nil {
+			ctx.String(http.StatusBadRequest, "IDが不正です")
+			return
+		}
+		var user User
+		db.Find(&user, id)
+		if user.ID == 0 {
+			ctx.String(http.StatusNotFound, "ユーザが見つかりません")
+			return
+		}
+		defer db.Close()
+		ctx.HTML(http.StatusOK, "user_show.html", gin.H{
+			"user": user,
+		})
+	})
+
+	// IDを取得して、そのIDのユーザー編集画面の表示を行う
+	router.GET("/user/edit/:id", func(ctx *gin.Context) {
+		db := sqlConnect()
+		n := ctx.Param("id")
 		id, err := strconv.Atoi(n)
 		if err != nil {
 			ctx.String(http.StatusBadRequest, "IDが不正です")
@@ -89,9 +111,31 @@ func main() {
 			return
 		}
 		defer db.Close()
-		ctx.HTML(http.StatusOK, "user_show.html", gin.H{
+		ctx.HTML(http.StatusOK, "user_edit.html", gin.H{
 			"user": user,
 		})
+	})
+
+	// IDを取得して、そのIDのユーザーを更新
+	router.POST("/user/update/:id", func(ctx *gin.Context) {
+		db := sqlConnect()
+		n := ctx.Param("id")
+		id, err := strconv.Atoi(n)
+		if err != nil {
+			ctx.String(http.StatusBadRequest, "IDが不正です")
+			return
+		}
+		var user User
+		db.First(&user, id)
+		if user.ID == 0 {
+			ctx.String(http.StatusNotFound, "ユーザが見つかりません")
+			return
+		}
+		user.Name = ctx.PostForm("name")
+		user.Email = ctx.PostForm("email")
+		db.Save(&user)
+		defer db.Close()
+		ctx.Redirect(http.StatusSeeOther, "/user/"+n)
 	})
 
 	// Webサーバーを起動
@@ -128,6 +172,5 @@ func sqlConnect() (database *gorm.DB) {
 		}
 	}
 	// fmt.Println("DB接続成功")
-
 	return db
 }

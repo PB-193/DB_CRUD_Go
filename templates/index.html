@@ -28,13 +28,25 @@
             <th>名前</th>
             <th>メールアドレス</th>
             <th>操作</th>
+            <th></th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
           {{ range .users }}
             <tr>
-              <td><a href="/user/{{ .ID }}">{{ .Name }}</a></td>
+              <td>{{ .Name }}</td>
               <td>{{ .Email }}</td>
+              <td>
+                <form method="get" action="/user/{{ .ID }}">
+                  <button type="submit" class="btn btn-secondary">詳細</button>
+                </form>
+              </td>
+              <td>
+                <form method="get" action="/user/edit/{{ .ID }}">
+                  <button type="submit" class="btn btn-info">編集</button>
+                </form>
+              </td>
               <td>
                 <form method="post" action="/delete/{{.ID}}">
                   <button type="submit" class="btn btn-danger">削除</button>
