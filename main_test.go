@@ -73,7 +73,6 @@ type Database interface {
 type MockDatabase struct{}
 
 func (db *MockDatabase) CreateUser(name string, email string) error {
-	// この例では何もしない
 	return nil
 }
 
