@@ -7,6 +7,10 @@
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
   </head>
   <body>
+    <!-- header部分 -->
+    {{ template "header.html" . }}
+
+    <!-- ここからコンテンツ部分 -->
     <div class="container mt-5">
       <h2 class="mb-4">ユーザーの追加</h2>
       <form method="post" action="/new" class="mb-5">
@@ -59,6 +63,9 @@
     </div>
     <!-- Bootstrap JS (optional) -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <!-- footer部分 -->
+    {{ template "footer.html" . }}
   </body>
 </html>
 

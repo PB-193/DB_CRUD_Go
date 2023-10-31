@@ -34,15 +34,21 @@ func main() {
 
 	// ユーザーの一覧を表示するルートです。データベースからユーザーの情報を取得して、index.html というテンプレートに渡しています。
 	router.GET("/", func(ctx *gin.Context) {
+
+		// Custom-Headerを追加
+		ctx.Header("Custom-Header", "some-value")
+
 		db := sqlConnect()
 		var users []User
 		db.Order("created_at asc").Find(&users)
 		defer db.Close()
 
 		ctx.HTML(200, "index.html", gin.H{
-			"users": users,
+			"header": "HelloWorld", // ヘッダーとして表示するテキスト
+			"users":  users,
 		})
 	})
+
 	// 'ctx'はGinのオブジェクト。HTTPリクエストとレスポンスの橋渡し役
 	router.POST("/new", func(ctx *gin.Context) {
 		db := sqlConnect()
