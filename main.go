@@ -17,6 +17,7 @@ type User struct {
 	gorm.Model
 	Name  string
 	Email string
+	Age   int
 }
 
 func main() {
@@ -54,8 +55,9 @@ func main() {
 		db := sqlConnect()
 		name := ctx.PostForm("name")
 		email := ctx.PostForm("email")
+		age, _ := strconv.Atoi(ctx.PostForm("age"))
 		fmt.Println("create user " + name + " with email " + email)
-		db.Create(&User{Name: name, Email: email})
+		db.Create(&User{Name: name, Email: email, Age: age})
 		defer db.Close()
 
 		// 保存後、ルートページにリダイレクト

@@ -37,6 +37,10 @@
             placeholder="入力してください"
           />
         </div>
+        <div class="form-group">
+          <label for="age">年齢</label>
+          <input type="text" class="form-control" id="age" name="age" placeholder="入力してください">
+        </div>
         <button type="submit" class="btn btn-primary">送信</button>
       </form>
 
@@ -46,6 +50,7 @@
           <tr>
             <th>名前</th>
             <th>メールアドレス</th>
+            <th>年齢</th>
             <th>操作</th>
             <th></th>
             <th></th>
@@ -53,32 +58,33 @@
         </thead>
         <tbody>
           {{ range .users }}
-          <tr>
-            <td>{{ .Name }}</td>
-            <td>{{ .Email }}</td>
-            <td>
-              <form method="get" action="/user/{{ .ID }}">
-                <button type="submit" class="btn btn-secondary">詳細</button>
-              </form>
-            </td>
-            <td>
-              <form method="get" action="/user/edit/{{ .ID }}">
-                <button type="submit" class="btn btn-info">編集</button>
-              </form>
-            </td>
-            <td>
-              <form method="post" action="/delete/{{.ID}}">
-                <button type="submit" class="btn btn-danger">削除</button>
-              </form>
-            </td>
-          </tr>
+            <tr>
+              <td>{{ .Name }}</td>
+              <td>{{ .Email }}</td>
+              <td>{{ .Age }}</td>
+              <td>
+                <form method="get" action="/user/{{ .ID }}">
+                  <button type="submit" class="btn btn-secondary">詳細</button>
+                </form>
+              </td>
+              <td>
+                <form method="get" action="/user/edit/{{ .ID }}">
+                  <button type="submit" class="btn btn-info">編集</button>
+                </form>
+              </td>
+              <td>
+                <form method="post" action="/delete/{{.ID}}">
+                  <button type="submit" class="btn btn-danger">削除</button>
+                </form>
+              </td>
+            </tr>
           {{ end }}
         </tbody>
       </table>
     </div>
     <!-- Bootstrap JS (optional) -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    
+
     <!-- footer部分 -->
     {{ template "footer.html" . }}
   </body>
