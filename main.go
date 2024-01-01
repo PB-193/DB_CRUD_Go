@@ -9,16 +9,20 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	// 構造体のフィールドに対するバリデーションを行うためのパッケージ
+	"github.com/go-playground/validator/v10"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 )
 
 type User struct {
 	gorm.Model
-	Name  string
-	Email string
-	Age   int
+	Name  string `validate:"required"`       // Name は必須項目
+	Email string `validate:"required,email"` // Email は必須項目で、メールアドレス形式
+	Age   int    `validate:"gte=0,lte=130"`  // Age は0以上130以下
 }
+
+var validate *validator.Validate
 
 func main() {
 	// データベースへの接続を開始
@@ -28,6 +32,8 @@ func main() {
 	// 関数の終了時にデータベースの接続を閉じるよう指示
 	defer db.Close()
 
+	// バリデーションの初期化
+	validate = validator.New()
 	// ginフレームワークのデフォルトのルータを初期化
 	router := gin.Default()
 	// templates ディレクトリのHTMLテンプレートを全て読み込む
@@ -56,11 +62,15 @@ func main() {
 		name := ctx.PostForm("name")
 		email := ctx.PostForm("email")
 		age, _ := strconv.Atoi(ctx.PostForm("age"))
-		fmt.Println("create user " + name + " with email " + email)
-		db.Create(&User{Name: name, Email: email, Age: age})
+		user := &User{Name: name, Email: email, Age: age}
+		err := validate.Struct(user)
+		if err != nil {
+			// バリデーションエラーの処理
+			ctx.String(http.StatusBadRequest, "入力が不正です")
+			return
+		}
+		db.Create(user)
 		defer db.Close()
-
-		// 保存後、ルートページにリダイレクト
 		ctx.Redirect(302, "/")
 	})
 
