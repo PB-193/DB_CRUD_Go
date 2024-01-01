@@ -66,7 +66,9 @@ func main() {
 		err := validate.Struct(user)
 		if err != nil {
 			// バリデーションエラーの処理
-			ctx.String(http.StatusBadRequest, "入力が不正です")
+			ctx.HTML(http.StatusBadRequest, "error.html", gin.H{
+				"error": "入力が不正です。はじめからやり直してください。",
+			})
 			return
 		}
 		db.Create(user)
